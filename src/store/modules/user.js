@@ -34,14 +34,15 @@ const mutations = {
 const actions = {
   // user login
   login({ commit }, userInfo) {
-    const { username, password } = userInfo
+    const { name, password } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
-        const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
+      login({ name: name.trim(), password: password }).then(response => {
+        console.log('登录成功', response)
+        commit('SET_TOKEN', response.admin.name)
+        setToken(response.admin.name)
         resolve()
       }).catch(error => {
+        console.log('登录失败', error)
         reject(error)
       })
     })
@@ -57,16 +58,16 @@ const actions = {
           reject('Verification failed, please Login again.')
         }
 
-        const { roles, name, avatar } = data
-
+        const { nickname, iconUrl } = data
+        const roles = ['admin']
         // roles must be a non-empty array
         if (!roles || roles.length <= 0) {
           reject('getInfo: roles must be a non-null array!')
         }
 
         commit('SET_ROLES', roles)
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
+        commit('SET_NAME', nickname)
+        commit('SET_AVATAR', iconUrl)
         resolve(data)
       }).catch(error => {
         reject(error)
